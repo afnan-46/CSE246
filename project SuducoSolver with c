@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <stdbool.h>
+
+#define num 9
+
+
+bool isSafe(int grid[num][num], int row, int col, int val); //  if a number can be placed in a specific cell
+
+bool findEmpty(int grid[num][num], int* row, int* col);    //  to find an empty cell (0)
+
+
+bool solveSudoku(int grid[num][num]);  //  backtracking function to solve the Sudoku
+
+
+void printGrid(int grid[num][num]);
+
+int main() {
+    int grid[num][num];
+    
+freopen("input.txt", "r", stdin);
+    printf("Enter the Sudoku grid (9x9, use 0 for empty cells):\n");
+    for (int i = 0; i < num; i++) {
+        for (int j = 0; j < num; j++) {
+            scanf("%d", &grid[i][j]);
+        }
+    }
+
+    if (solveSudoku(grid)) {
+        printf("\nSudoku puzzle solved successfully:\n");
+        printGrid(grid);
+    } else {
+        printf("\nNo solution exists for the given Sudoku puzzle.\n");
+    }
+
+    return 0;
+}
+
+// Function to check if a number 'val' can be placed at grid[row][col]
+bool isSafe(int grid[num][num], int row, int col, int val) {
+    //row
+    for (int c = 0; c < num; c++) {
+        if (grid[row][c] == val) {
+            return false;
+        }
+    }
+
+    //  column
+    for (int r = 0; r < num; r++) {
+        if (grid[r][col] == val) {
+            return false;
+        }
+    }
+
+    // 3x3 subgrid
+    int startRow = row - row % 3;
+    int startCol = col - col % 3;
+    for (int r = 0; r < 3; r++) {
+        for (int c = 0; c < 3; c++) {
+            if (grid[startRow + r][startCol + c] == val) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+//checking emty cells here.
+bool findEmpty(int grid[num][num], int* row, int* col) {
+    for (*row = 0; *row < num; (*row)++) {
+        for (*col = 0; *col < num; (*col)++) {
+            if (grid[*row][*col] == 0) {
+                return true;
+            }
+        }
+    }
+    return false; // No empty cells left
+}
+
+// Backtracking function to solve the puzzle
+bool solveSudoku(int grid[num][num]) {
+    int row, col;
+
+    // Base case: If no empty cells are left, the puzzle is solved.
+    if (!findEmpty(grid, &row, &col)) {
+        return true;
+    }
+
+    // numbers from 1 to 9
+    for (int val = 1; val <= 9; val++) {
+       
+        if (isSafe(grid, row, col, val)) {  // Check if the current value is safe to place.
+            // Place the number
+            grid[row][col] = val;
+
+            // Recurse to solve the rest of the puzzle
+            if (solveSudoku(grid)) {
+                return true;
+            }
+
+            // Backtrack: If the current placement didn't lead to a solution,
+            // reset the cell to 0 and try the next number.
+            grid[row][col] = 0;
+        }
+    }
+    return false; 
+}
+
+
+void printGrid(int grid[num][num]) {
+    for (int i = 0; i < num; i++) {
+        for (int j = 0; j < num; j++) {
+            printf("%2d ", grid[i][j]);
+        }
+        printf("\n");
+    }
+}
