@@ -1,2 +1,2 @@
-# CSE246
-c or java codes will be stored here
+# CSE246 Course ALgorithms
+c or java Lab codes will be stored here
